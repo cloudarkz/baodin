@@ -1,4 +1,4 @@
-package com.jtb.baodin.baodin;
+package com.jtb.baodin;
 
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
