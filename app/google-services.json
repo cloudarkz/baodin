@@ -1,0 +1,48 @@
+{
+  "project_info": {
+    "project_number": "1021579892981",
+    "project_id": "baodindebug"
+  },
+  "client": [
+    {
+      "client_info": {
+        "mobilesdk_app_id": "1:1021579892981:android:c869d753b11cfe3e",
+        "android_client_info": {
+          "package_name": "com.jtb.baodin"
+        }
+      },
+      "oauth_client": [
+        {
+          "client_id": "1021579892981-2ad9uk5n5i2ufo4dsrg5bdsrc6tftb0o.apps.googleusercontent.com",
+          "client_type": 1,
+          "android_info": {
+            "package_name": "com.jtb.baodin",
+            "certificate_hash": "A12BB97C24EB2ECAF80E357E15879F794A733849"
+          }
+        },
+        {
+          "client_id": "1021579892981-bkg704cf83p64mk8eu28mho4f2oora2a.apps.googleusercontent.com",
+          "client_type": 3
+        }
+      ],
+      "api_key": [
+        {
+          "current_key": "AIzaSyDToBHT-OFJbglg_V2jUOwK98QGzGptJC0"
+        }
+      ],
+      "services": {
+        "analytics_service": {
+          "status": 1
+        },
+        "appinvite_service": {
+          "status": 1,
+          "other_platform_oauth_client": []
+        },
+        "ads_service": {
+          "status": 1
+        }
+      }
+    }
+  ],
+  "configuration_version": "1"
+}

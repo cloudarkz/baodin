@@ -1,3 +1,25 @@
 <resources>
     <string name="app_name">baodin</string>
+
+    <!-- MainActivity: Login START -->
+    <string name="hint_email">Enter email</string>
+    <string name="hint_password">Enter password</string>
+    <string name="button_login">Login</string>
+    <string name="label_or">OR</string>
+
+    <!-- Login Server -->
+    <string name="client_id_release">937928114822-gq7o351ic6cf7bbnufl08g82netam1dk.apps.googleusercontent.com</string>
+    <string name="client_id_debug">1021579892981-bkg704cf83p64mk8eu28mho4f2oora2a.apps.googleusercontent.com</string>
+
+    <!-- Button labels -->
+    <string name="sign_out">Sign Out</string>
+    <string name="disconnect">Disconnect</string>
+
+    <!-- Sign-in status messages -->
+    <string name="signed_in_fmt">Signed in as: %s</string>
+    <string name="signed_out">Signed out</string>
+    <string name="signed_in_err">"Error: please check logs."</string>
+
+    <string name="loading">Loading…</string>
+    <!-- MainActivity: Login END -->
 </resources>
