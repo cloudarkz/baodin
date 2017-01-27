@@ -32,8 +32,20 @@
     <string name="error_invalid_password">This password is too short</string>
     <string name="error_incorrect_password">This password is incorrect</string>
     <string name="error_field_required">This field is required</string>
-    <string name="permission_rationale">"Contacts permissions are needed for providing email
-        completions."
-    </string>
+    <string name="permission_rationale">"Contacts permissions are needed for providing email completions."</string>
     <!-- MainActivity: Login END -->
+
+    <!-- MainActivity: Bottom Navigation Bar START -->
+    <string name="text_search">Search Fragment</string>
+    <string name="text_favorite">Favorite Fragment</string>
+    <string name="text_user_profile">User Profile Fragment</string>
+
+    <string name="menu_favorite">Favorite</string>
+    <string name="menu_search">Search</string>
+    <string name="menu_user_profile">User Profile</string>
+
+    <!-- TODO: Remove or change this placeholder text -->
+    <string name="hello_blank_fragment">Hello blank fragment</string>
+    <!-- MainActivity: Bottom Navigation Bar END -->
+
 </resources>
