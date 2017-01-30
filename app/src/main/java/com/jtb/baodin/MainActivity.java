@@ -84,7 +84,13 @@ public class MainActivity extends AppCompatActivity {
         // update selected item
         mSelectedItem = item.getItemId();
 
-        updateActionBarText(item.getTitle());
+        // uncheck the other items.
+        for (int i = 0; i< mBottomNavigationView.getMenu().size(); i++) {
+            MenuItem menuItem = mBottomNavigationView.getMenu().getItem(i);
+            menuItem.setChecked(menuItem.getItemId() == item.getItemId());
+        }
+
+        updateToolbarText(item.getTitle());
 
         if (fragment != null) {
             FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
@@ -93,7 +99,7 @@ public class MainActivity extends AppCompatActivity {
         }
     }
 
-    private void updateActionBarText(CharSequence text) {
+    private void updateToolbarText(CharSequence text) {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setTitle(text);
