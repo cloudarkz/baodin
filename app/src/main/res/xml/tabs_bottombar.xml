@@ -3,24 +3,24 @@
     <tab
         id="@+id/tab_browse"
         icon="@drawable/ic_search"
-        title="Browse">
+        title="@string/bottombar_tab_browse">
     </tab>
 
     <tab
         id="@+id/tab_favorites"
         icon="@drawable/ic_favorite"
-        title="Favorites">
+        title="@string/bottombar_tab_favorites">
     </tab>
 
     <tab
         id="@+id/tab_appointments"
         icon="@drawable/ic_date_range"
-        title="Appointments">
+        title="@string/bottombar_tab_appointments">
     </tab>
 
     <tab
         id="@+id/tab_userprofile"
         icon="@drawable/ic_person"
-        title="User Profile">
+        title="@string/bottombar_tab_userprofile">
     </tab>
 </tabs>
