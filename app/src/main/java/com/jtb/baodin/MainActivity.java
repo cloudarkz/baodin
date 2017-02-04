@@ -1,112 +1,111 @@
 package com.jtb.baodin;
 
-import android.os.Bundle;
 import android.content.Intent;
-import android.support.annotation.ColorRes;
-import android.support.annotation.NonNull;
-import android.support.v4.content.ContextCompat;
-import android.support.v7.app.ActionBar;
-import android.support.v7.app.AppCompatActivity;
-import android.support.design.widget.BottomNavigationView;
+import android.net.Uri;
+import android.support.annotation.IdRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
-import android.view.MenuItem;
+import android.support.v7.app.ActionBar;
+import android.support.v7.app.AppCompatActivity;
+import android.os.Bundle;
 
-public class MainActivity extends AppCompatActivity {
+import com.roughike.bottombar.BottomBar;
+import com.roughike.bottombar.OnTabReselectListener;
+import com.roughike.bottombar.OnTabSelectListener;
 
-    private static final String SELECTED_ITEM = "arg_selected_item";
+public class MainActivity extends AppCompatActivity implements UserProfileFragment.OnUserProfileFragmentInteraction {
 
-    private BottomNavigationView mBottomNavigationView;
-    private int mSelectedItem;
+    private UserProfileFragment mBrowseFragment;
+    private UserProfileFragment mFavoritesFragment;
+    private UserProfileFragment mAppointmentFragment;
+    private UserProfileFragment mUserProfileFragment;
+
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-//        Intent intent = new Intent(this, LoginActivity.class);
-//        startActivity(intent);
+        mBrowseFragment = UserProfileFragment.newInstance(getString(R.string.bottombar_tab_browse), getString(R.string.bottombar_tab_browse));
+        mFavoritesFragment = UserProfileFragment.newInstance(getString(R.string.bottombar_tab_favorites), getString(R.string.bottombar_tab_favorites));
+        mAppointmentFragment = UserProfileFragment.newInstance(getString(R.string.bottombar_tab_appointments), getString(R.string.bottombar_tab_appointments));
+        mUserProfileFragment = UserProfileFragment.newInstance(getString(R.string.bottombar_tab_userprofile), getString(R.string.bottombar_tab_userprofile));
 
-        mBottomNavigationView = (BottomNavigationView) findViewById(R.id.bottom_navigation);
-        mBottomNavigationView.setOnNavigationItemSelectedListener(new BottomNavigationView.OnNavigationItemSelectedListener() {
+ //       Intent intent = new Intent(this, LoginActivity.class);
+ //       startActivity(intent);
+
+        FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+        fragmentTransaction.add(R.id.contentContainer, mBrowseFragment, mBrowseFragment.getTag());
+        fragmentTransaction.commit();
+
+        // BottomBar Listeners for swapping view fragments
+        BottomBar bottomBar = (BottomBar) findViewById(R.id.bottomBar);
+        bottomBar.setOnTabSelectListener(new OnTabSelectListener() {
             @Override
-            public boolean onNavigationItemSelected(@NonNull MenuItem item) {
-                selectFragment(item);
-                return true;
+            public void onTabSelected(@IdRes int tabID) {
+                swapFragment(tabID);
             }
         });
-
-        MenuItem selectedItem;
-        if (savedInstanceState != null) {
-            mSelectedItem = savedInstanceState.getInt(SELECTED_ITEM, 0);
-            selectedItem = mBottomNavigationView.getMenu().findItem(mSelectedItem);
-        } else {
-            selectedItem = mBottomNavigationView.getMenu().getItem(0);
-        }
-        selectFragment(selectedItem);
+        bottomBar.setOnTabReselectListener(new OnTabReselectListener() {
+            @Override
+            public void onTabReSelected(@IdRes int tabID) {
+            }
+        });
     }
 
-    @Override
-    protected void onSaveInstanceState(Bundle outState) {
-        outState.putInt(SELECTED_ITEM, mSelectedItem);
-        super.onSaveInstanceState(outState);
-    }
-
-    @Override
-    public void onBackPressed() {
-        MenuItem homeItem = mBottomNavigationView.getMenu().getItem(0);
-        if (mSelectedItem != homeItem.getItemId()) {
-            // select home item
-            selectFragment(homeItem);
-        } else {
-            super.onBackPressed();
-        }
-    }
-
-    private void selectFragment(MenuItem item) {
+    /**
+     * Description:
+     * Handles the swapping between different view fragments.
+     *
+     * @param tabID int of the tab selected on the BottomBar
+     */
+    private void swapFragment(int tabID) {
         Fragment fragment = null;
-        // init corresponding fragment
-        switch (item.getItemId()) {
-            case R.id.menu_search:
-                fragment = SearchFragment.newInstance(getString(R.string.text_search),
-                        getColorFromRes(R.color.color_search));
+
+        switch (tabID) {
+            case R.id.tab_browse:
+                fragment = mBrowseFragment;
+                updateActionbarText(getString(R.string.bottombar_tab_browse));
                 break;
-            case R.id.menu_favorite:
-                fragment = SearchFragment.newInstance(getString(R.string.text_favorite),
-                        getColorFromRes(R.color.color_favorite));
+            case R.id.tab_favorites:
+                fragment = mFavoritesFragment;
+                updateActionbarText(getString(R.string.bottombar_tab_favorites));
                 break;
-            case R.id.menu_user_profile:
-                fragment = SearchFragment.newInstance(getString(R.string.text_user_profile),
-                        getColorFromRes(R.color.color_user_profile));
+            case R.id.tab_appointments:
+                fragment = mAppointmentFragment;
+                updateActionbarText(getString(R.string.bottombar_tab_appointments));
+                break;
+            case R.id.tab_userprofile:
+                fragment = mUserProfileFragment;
+                updateActionbarText(getString(R.string.bottombar_tab_userprofile));
                 break;
         }
-
-        // update selected item
-        mSelectedItem = item.getItemId();
-
-        // uncheck the other items.
-        for (int i = 0; i< mBottomNavigationView.getMenu().size(); i++) {
-            MenuItem menuItem = mBottomNavigationView.getMenu().getItem(i);
-            menuItem.setChecked(menuItem.getItemId() == item.getItemId());
-        }
-
-        updateToolbarText(item.getTitle());
 
         if (fragment != null) {
-            FragmentTransaction ft = getSupportFragmentManager().beginTransaction();
-            ft.add(R.id.main_container, fragment, fragment.getTag());
-            ft.commit();
+            FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
+            fragmentTransaction.replace(R.id.contentContainer, fragment, fragment.getTag());
+            fragmentTransaction.commit();
         }
     }
 
-    private void updateToolbarText(CharSequence text) {
+    /**
+     * Description:
+     * Updates the Actionbar title text when fragments are swapped.
+     *
+     */
+    private void updateActionbarText(CharSequence text) {
         ActionBar actionBar = getSupportActionBar();
         if (actionBar != null) {
             actionBar.setTitle(text);
         }
     }
 
-    private int getColorFromRes(@ColorRes int resId) {
-        return ContextCompat.getColor(this, resId);
+    /**
+     * Description:
+     * Callback for user interaction on the User Profile Fragment.
+     *
+     */
+    public void onUserProfileFragmentInteraction(String string) {
+        updateActionbarText(string);
     }
 }

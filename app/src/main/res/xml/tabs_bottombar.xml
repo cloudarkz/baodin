@@ -1,0 +1,26 @@
+<?xml version="1.0" encoding="utf-8"?>
+<tabs>
+    <tab
+        id="@+id/tab_browse"
+        icon="@drawable/ic_search"
+        title="@string/bottombar_tab_browse">
+    </tab>
+
+    <tab
+        id="@+id/tab_favorites"
+        icon="@drawable/ic_favorite"
+        title="@string/bottombar_tab_favorites">
+    </tab>
+
+    <tab
+        id="@+id/tab_appointments"
+        icon="@drawable/ic_date_range"
+        title="@string/bottombar_tab_appointments">
+    </tab>
+
+    <tab
+        id="@+id/tab_userprofile"
+        icon="@drawable/ic_person"
+        title="@string/bottombar_tab_userprofile">
+    </tab>
+</tabs>
