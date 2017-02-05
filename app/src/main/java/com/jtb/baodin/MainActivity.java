@@ -1,25 +1,42 @@
 package com.jtb.baodin;
 
+import android.content.Context;
 import android.content.Intent;
-import android.net.Uri;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.annotation.IdRes;
 import android.support.v4.app.Fragment;
 import android.support.v4.app.FragmentTransaction;
 import android.support.v7.app.ActionBar;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
+import android.util.Log;
 
+import com.jtb.utilities.DownloadCallback;
+import com.jtb.utilities.NetworkFragment;
 import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.OnTabReselectListener;
 import com.roughike.bottombar.OnTabSelectListener;
 
-public class MainActivity extends AppCompatActivity implements UserProfileFragment.OnUserProfileFragmentInteraction {
+import org.json.JSONObject;
+
+public class MainActivity extends AppCompatActivity implements UserProfileFragment.OnUserProfileFragmentInteraction, DownloadCallback<String> {
+    public static final String TAG = "MainActivity";
 
     private UserProfileFragment mBrowseFragment;
     private UserProfileFragment mFavoritesFragment;
     private UserProfileFragment mAppointmentFragment;
     private UserProfileFragment mUserProfileFragment;
 
+    // Keep a reference to the NetworkFragment, which owns the AsyncTask object
+    // that is used to execute network ops.
+    private NetworkFragment mNetworkFragment;
+
+    // Boolean telling us whether a download is in progress, so we don't trigger overlapping
+    // downloads with consecutive button clicks.
+    private boolean mDownloading = false;
+
+    private boolean isLogin = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
@@ -30,9 +47,16 @@ public class MainActivity extends AppCompatActivity implements UserProfileFragme
         mFavoritesFragment = UserProfileFragment.newInstance(getString(R.string.bottombar_tab_favorites), getString(R.string.bottombar_tab_favorites));
         mAppointmentFragment = UserProfileFragment.newInstance(getString(R.string.bottombar_tab_appointments), getString(R.string.bottombar_tab_appointments));
         mUserProfileFragment = UserProfileFragment.newInstance(getString(R.string.bottombar_tab_userprofile), getString(R.string.bottombar_tab_userprofile));
+        mNetworkFragment = NetworkFragment.getInstance(getSupportFragmentManager(), getString(R.string.server_url));
 
- //       Intent intent = new Intent(this, LoginActivity.class);
- //       startActivity(intent);
+        Intent mainIntent = getIntent();
+        isLogin = mainIntent.getBooleanExtra(LoginActivity.LOGIN_SUCCESS, false);
+        Log.d(TAG, "LOGIN STATUS: " + isLogin);
+
+        if(!isLogin){
+            Intent loginIntent = new Intent(this, LoginActivity.class);
+            startActivity(loginIntent);
+        }
 
         FragmentTransaction fragmentTransaction = getSupportFragmentManager().beginTransaction();
         fragmentTransaction.add(R.id.contentContainer, mBrowseFragment, mBrowseFragment.getTag());
@@ -108,4 +132,69 @@ public class MainActivity extends AppCompatActivity implements UserProfileFragme
     public void onUserProfileFragmentInteraction(String string) {
         updateActionbarText(string);
     }
+
+    private void startDownload(JSONObject req) {
+        if (!mDownloading && mNetworkFragment != null) {
+            // Execute the async download.
+            mNetworkFragment.startDownload(req);
+            mDownloading = true;
+        }
+    }
+
+    /** DownloadCallback Interface implementation START */
+    @Override
+    public void updateFromDownload(String result) {
+        // Update your UI here based on result of download.
+
+        try{
+            JSONObject jObject = new JSONObject(result);
+
+            if(jObject.getInt("response") == 0)
+                updateActionbarText(jObject.getString("data"));
+            else
+                updateActionbarText("Server error: " + jObject.getString("data"));
+
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public NetworkInfo getActiveNetworkInfo() {
+        ConnectivityManager connectivityManager =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        return networkInfo;
+    }
+
+    @Override
+    public void onProgressUpdate(int progressCode, int percentComplete) {
+        switch(progressCode) {
+            // You can add UI behavior for progress updates here.
+            case Progress.ERROR:
+
+                break;
+            case Progress.CONNECT_SUCCESS:
+
+                break;
+            case Progress.GET_INPUT_STREAM_SUCCESS:
+
+                break;
+            case Progress.PROCESS_INPUT_STREAM_IN_PROGRESS:
+
+                break;
+            case Progress.PROCESS_INPUT_STREAM_SUCCESS:
+
+                break;
+        }
+    }
+
+    @Override
+    public void finishDownloading() {
+        mDownloading = false;
+        if (mNetworkFragment != null) {
+            mNetworkFragment.cancelDownload();
+        }
+    }
+    /** DownloadCallback Interface implementation END */
 }

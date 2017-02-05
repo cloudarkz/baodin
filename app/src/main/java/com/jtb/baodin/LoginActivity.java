@@ -1,11 +1,15 @@
 package com.jtb.baodin;
 
 import android.app.ProgressDialog;
+import android.content.Context;
 import android.content.Intent;
+import android.net.ConnectivityManager;
+import android.net.NetworkInfo;
 import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 import android.view.View;
+import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.android.gms.auth.api.Auth;
@@ -17,23 +21,38 @@ import com.google.android.gms.common.api.GoogleApiClient;
 import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
+import com.jtb.utilities.DownloadCallback;
+import com.jtb.utilities.NetworkFragment;
+
+import org.json.JSONObject;
 
 //Google Cloud Console:
 //Username: jtb.dev.2017@gmail.com
 //Password: jtbdev2017
 
-public class LoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, View.OnClickListener {
+public class LoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, View.OnClickListener, DownloadCallback<String> {
     private static final String TAG = "LoginActivity";
+    public final static String LOGIN_SUCCESS = "com.jtb.baodin.LOGIN_SUCCESS";
     private static final int RC_SIGN_IN = 9001;
 
     private GoogleApiClient mGoogleApiClient;
     private TextView mStatusTextView;
     private ProgressDialog mProgressDialog;
 
+    // Keep a reference to the NetworkFragment, which owns the AsyncTask object
+    // that is used to execute network ops.
+    private NetworkFragment mNetworkFragment;
+
+    // Boolean telling us whether a download is in progress, so we don't trigger overlapping
+    // downloads with consecutive button clicks.
+    private boolean mDownloading = false;
+
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
+
+        mNetworkFragment = NetworkFragment.getInstance(getSupportFragmentManager(), getString(R.string.server_url));
 
         // Views
         mStatusTextView = (TextView) findViewById(R.id.status);
@@ -99,9 +118,10 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         Log.d(TAG, "handleSignInResult:" + result.isSuccess());
         if (result.isSuccess()) {
             // Signed in successfully, show authenticated UI.
-            GoogleSignInAccount acct = result.getSignInAccount();
-            mStatusTextView.setText(getString(R.string.signed_in_fmt, acct.getDisplayName()));
-            updateUI(true);
+//            GoogleSignInAccount acct = result.getSignInAccount();
+//            mStatusTextView.setText(getString(R.string.signed_in_fmt, acct.getDisplayName()));
+//            updateUI(true);
+            loginSuccess();
         } else {
             // Signed out, show unauthenticated UI.
             mStatusTextView.setText(getString(R.string.signed_in_err));
@@ -191,4 +211,103 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
             findViewById(R.id.status).setVisibility(View.GONE);
         }
     }
+
+    /** Called when the user clicks the Login button */
+    public void authenticateLogin(View view){
+        EditText emailText = (EditText) findViewById(R.id.login_email);
+        String email = emailText.getText().toString();
+
+        EditText passwordText = (EditText) findViewById(R.id.login_password);
+        String password = passwordText.getText().toString();
+
+        try{
+            JSONObject req = new JSONObject();
+
+            req.put("cmd", "authenticate");
+            req.put("email", email);
+            req.put("password", password);
+
+            startDownload(req);
+        }
+        catch(Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    private void loginSuccess(){
+        Intent intent = new Intent(this, MainActivity.class);
+        intent.putExtra(LOGIN_SUCCESS, true);
+        startActivity(intent);
+    }
+
+    private void startDownload(JSONObject req) {
+        if (!mDownloading && mNetworkFragment != null) {
+            // Execute the async download.
+            mNetworkFragment.startDownload(req);
+            mDownloading = true;
+        }
+    }
+
+    /** DownloadCallback Interface implementation START */
+    @Override
+    public void updateFromDownload(String result) {
+        // Update your UI here based on result of download.
+
+        try{
+            JSONObject jObject = new JSONObject(result);
+
+            if(jObject.getInt("response") == 0){
+                Log.d(TAG, "Login Successful for accountID: " + jObject.getString("data"));
+                loginSuccess();
+            }
+            else{
+                Log.d(TAG, "Server error: " + jObject.getString("data"));
+                TextView errorText = (TextView) findViewById(R.id.login_error);
+                errorText.setText(jObject.getString("data"));
+            }
+
+
+        } catch (Exception e){
+            e.printStackTrace();
+        }
+    }
+
+    @Override
+    public NetworkInfo getActiveNetworkInfo() {
+        ConnectivityManager connectivityManager =
+                (ConnectivityManager) getSystemService(Context.CONNECTIVITY_SERVICE);
+        NetworkInfo networkInfo = connectivityManager.getActiveNetworkInfo();
+        return networkInfo;
+    }
+
+    @Override
+    public void onProgressUpdate(int progressCode, int percentComplete) {
+        switch(progressCode) {
+            // You can add UI behavior for progress updates here.
+            case DownloadCallback.Progress.ERROR:
+
+                break;
+            case DownloadCallback.Progress.CONNECT_SUCCESS:
+
+                break;
+            case DownloadCallback.Progress.GET_INPUT_STREAM_SUCCESS:
+
+                break;
+            case DownloadCallback.Progress.PROCESS_INPUT_STREAM_IN_PROGRESS:
+
+                break;
+            case DownloadCallback.Progress.PROCESS_INPUT_STREAM_SUCCESS:
+
+                break;
+        }
+    }
+
+    @Override
+    public void finishDownloading() {
+        mDownloading = false;
+        if (mNetworkFragment != null) {
+            mNetworkFragment.cancelDownload();
+        }
+    }
+    /** DownloadCallback Interface implementation END */
 }

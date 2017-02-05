@@ -59,8 +59,7 @@
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
-            android:text="@string/label_or">
-        </TextView>
+            android:text="@string/label_or" />
 
         <EditText android:id="@+id/login_email"
             android:layout_width="match_parent"
@@ -74,10 +73,16 @@
             android:inputType="textPassword"
             android:hint="@string/hint_password" />
 
+        <TextView android:id="@+id/login_error"
+            android:layout_width="match_parent"
+            android:layout_height="wrap_content"
+            android:gravity="center"
+            android:textColor="@color/colorAccent"/>
+
         <Button
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:text="@string/button_login"
-            android:onClick="login" />
+            android:onClick="authenticateLogin" />
     </LinearLayout>
 </LinearLayout>

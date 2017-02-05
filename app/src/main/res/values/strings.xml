@@ -1,6 +1,9 @@
 <resources>
     <string name="app_name">baodin</string>
 
+    <!-- Backend Server URL -->
+    <string name="server_url">http://yongjustin.com/baodin/requestController.php</string>
+
     <!-- LoginActivity -->
     <string name="title_activity_login">Sign in</string>
 
