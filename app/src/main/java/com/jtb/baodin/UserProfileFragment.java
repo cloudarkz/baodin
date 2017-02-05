@@ -11,6 +11,8 @@ import android.view.View;
 import android.view.ViewGroup;
 import android.widget.TextView;
 
+import org.w3c.dom.Text;
+
 
 /**
  * A simple {@link Fragment} subclass.
@@ -32,18 +34,14 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
 
     private OnUserProfileFragmentInteraction mListener;
 
+    private static TextView fragmentTextView;
+    private static TextView usernameTextView;
+    private static TextView accountIDTextView;
+
     public UserProfileFragment() {
         // Required empty public constructor
     }
 
-    /**
-     * Use this factory method to create a new instance of
-     * this fragment using the provided parameters.
-     *
-     * @param param1 Parameter 1.
-     * @param param2 Parameter 2.
-     * @return A new instance of fragment UserProfileFragment.
-     */
     // TODO: Rename and change types and number of parameters
     public static UserProfileFragment newInstance(String param1, String param2) {
         UserProfileFragment fragment = new UserProfileFragment();
@@ -67,7 +65,15 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         // Inflate the layout for this fragment
-        return inflater.inflate(R.layout.fragment_user_profile, container, false);
+        View view = inflater.inflate(R.layout.fragment_user_profile, container, false);
+
+        fragmentTextView = (TextView) view.findViewById(R.id.fragmentTextView);
+        usernameTextView = (TextView) view.findViewById(R.id.userNameTextView);
+        accountIDTextView = (TextView) view.findViewById(R.id.accountIDTextView);
+
+        view.findViewById(R.id.fragmentCallbackButton).setOnClickListener(this);
+
+        return view;
     }
 
     @Override
@@ -84,17 +90,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
             mParam2 = savedInstanceState.getString(ARG_PARAM2);
         }
 
-        TextView textView = (TextView) view.findViewById(R.id.fragmentTextView);
-        textView.setText(mParam2 + " selected!");
-
-        view.findViewById(R.id.fragmentCallbackButton).setOnClickListener(this);
-    }
-
-    // TODO: Rename method, update argument and hook method into UI event
-    public void onButtonPressed(View view) {
-        if (mListener != null) {
-            mListener.onUserProfileFragmentInteraction(mParam1 + ": Callback successful");
-        }
+        fragmentTextView.setText(mParam2 + " selected!");
     }
 
     @Override
@@ -122,18 +118,20 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
                 break;
         }
     }
-    /**
-     * This interface must be implemented by activities that contain this
-     * fragment to allow an interaction in this fragment to be communicated
-     * to the activity and potentially other fragments contained in that
-     * activity.
-     * <p>
-     * See the Android Training lesson <a href=
-     * "http://developer.android.com/training/basics/fragments/communicating.html"
-     * >Communicating with Other Fragments</a> for more information.
-     */
+
+    // TODO: Rename method, update argument and hook method into UI event
+    public void onButtonPressed(View view) {
+        if (mListener != null) {
+            mListener.onUserProfileFragmentInteraction(mParam1 + ": Callback successful");
+        }
+    }
+
+    public void populateUserProfile(String username, String accountID) {
+        usernameTextView.setText("username: " + username);
+        accountIDTextView.setText("accountID: " + accountID);
+    }
+
     public interface OnUserProfileFragmentInteraction {
-        // TODO: Update argument type and name
         void onUserProfileFragmentInteraction(String string);
     }
 }

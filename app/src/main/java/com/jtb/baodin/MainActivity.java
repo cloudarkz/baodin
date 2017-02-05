@@ -47,6 +47,7 @@ public class MainActivity extends AppCompatActivity implements UserProfileFragme
         mFavoritesFragment = UserProfileFragment.newInstance(getString(R.string.bottombar_tab_favorites), getString(R.string.bottombar_tab_favorites));
         mAppointmentFragment = UserProfileFragment.newInstance(getString(R.string.bottombar_tab_appointments), getString(R.string.bottombar_tab_appointments));
         mUserProfileFragment = UserProfileFragment.newInstance(getString(R.string.bottombar_tab_userprofile), getString(R.string.bottombar_tab_userprofile));
+
         mNetworkFragment = NetworkFragment.getInstance(getSupportFragmentManager(), getString(R.string.server_url));
 
         Intent mainIntent = getIntent();

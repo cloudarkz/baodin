@@ -4,7 +4,6 @@
     android:layout_height="match_parent"
     tools:context="com.jtb.baodin.UserProfileFragment">
 
-    <!-- TODO: Update blank fragment layout -->
     <TextView
         android:id="@+id/fragmentTextView"
         android:layout_width="match_parent"
@@ -17,7 +16,27 @@
         android:id="@+id/fragmentCallbackButton"
         android:layout_width="wrap_content"
         android:layout_height="wrap_content"
+        android:layout_centerHorizontal="true"
+        android:layout_alignParentBottom="true"
         android:text="Callback to MainActivity">
     </Button>
+
+    <TextView
+        android:id="@+id/userNameTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_marginTop="20dp"
+        android:textSize="20dp"
+        android:text="user name">
+    </TextView>
+
+    <TextView
+        android:id="@+id/accountIDTextView"
+        android:layout_width="match_parent"
+        android:layout_height="wrap_content"
+        android:layout_below="@+id/userNameTextView"
+        android:textSize="20dp"
+        android:text="accountID">
+    </TextView>
 
 </RelativeLayout>
