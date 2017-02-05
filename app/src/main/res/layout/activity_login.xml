@@ -43,7 +43,6 @@
             android:layout_height="wrap_content"
             android:layout_weight="1"
             android:text="@string/disconnect" />
-
     </LinearLayout>
 
     <LinearLayout
@@ -61,19 +60,22 @@
             android:gravity="center"
             android:text="@string/label_or" />
 
-        <EditText android:id="@+id/login_email"
+        <EditText
+            android:id="@+id/login_email"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textEmailAddress"
             android:hint="@string/hint_email" />
 
-        <EditText android:id="@+id/login_password"
+        <EditText
+            android:id="@+id/login_password"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:inputType="textPassword"
             android:hint="@string/hint_password" />
 
-        <TextView android:id="@+id/login_error"
+        <TextView
+            android:id="@+id/login_error"
             android:layout_width="match_parent"
             android:layout_height="wrap_content"
             android:gravity="center"
@@ -85,4 +87,5 @@
             android:text="@string/button_login"
             android:onClick="authenticateLogin" />
     </LinearLayout>
+
 </LinearLayout>

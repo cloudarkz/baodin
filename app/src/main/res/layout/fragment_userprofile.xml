@@ -9,8 +9,7 @@
         android:layout_width="match_parent"
         android:layout_height="wrap_content"
         android:layout_centerInParent="true"
-        android:gravity="center">
-    </TextView>
+        android:gravity="center"/>
 
     <Button
         android:id="@+id/fragmentCallbackButton"
@@ -18,8 +17,7 @@
         android:layout_height="wrap_content"
         android:layout_centerHorizontal="true"
         android:layout_alignParentBottom="true"
-        android:text="Callback to MainActivity">
-    </Button>
+        android:text="Callback to MainActivity"/>
 
     <TextView
         android:id="@+id/userNameTextView"
@@ -27,8 +25,7 @@
         android:layout_height="wrap_content"
         android:layout_marginTop="20dp"
         android:textSize="20dp"
-        android:text="user name">
-    </TextView>
+        android:text="user name"/>
 
     <TextView
         android:id="@+id/accountIDTextView"
@@ -36,7 +33,6 @@
         android:layout_height="wrap_content"
         android:layout_below="@+id/userNameTextView"
         android:textSize="20dp"
-        android:text="accountID">
-    </TextView>
+        android:text="accountID"/>
 
 </RelativeLayout>
