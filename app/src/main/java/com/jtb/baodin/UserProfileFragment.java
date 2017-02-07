@@ -18,7 +18,6 @@ import com.jtb.utilities.NetworkController;
 
 import org.json.JSONObject;
 
-
 /**
  * A simple {@link Fragment} subclass.
  * Activities that contain this fragment must implement the
@@ -86,7 +85,7 @@ public class UserProfileFragment extends Fragment implements View.OnClickListene
     public View onCreateView(LayoutInflater inflater, ViewGroup container, Bundle savedInstanceState)
     {
         // Inflate the layout for this fragment
-        View view = inflater.inflate(R.layout.fragment_user_profile, container, false);
+        View view = inflater.inflate(R.layout.fragment_userprofile, container, false);
 
         fragmentTextView = (TextView) view.findViewById(R.id.fragmentTextView);
         usernameTextView = (TextView) view.findViewById(R.id.userNameTextView);

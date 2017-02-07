@@ -12,6 +12,9 @@ import android.support.v7.app.AppCompatActivity;
 import android.os.Bundle;
 import android.util.Log;
 
+import com.jtb.baodin.dummy.DummyContent;
+import com.jtb.baodin.dummy.DummyContent.DummyItem;
+
 import com.jtb.utilities.DownloadCallback;
 import com.jtb.utilities.NetworkController;
 import com.roughike.bottombar.BottomBar;
@@ -20,11 +23,11 @@ import com.roughike.bottombar.OnTabSelectListener;
 
 import org.json.JSONObject;
 
-public class MainActivity extends AppCompatActivity implements UserProfileFragment.OnUserProfileFragmentInteraction, DownloadCallback<String> {
+public class MainActivity extends AppCompatActivity implements DownloadCallback<String>, UserProfileFragment.OnUserProfileFragmentInteraction, BrowseFragment.OnListFragmentInteractionListener {
     public static final String TAG = "MainActivity";
     public static final String ACCOUNTS_DETAILS = "AccountsDetails";
 
-    private UserProfileFragment mBrowseFragment;
+    private BrowseFragment mBrowseFragment;
     private UserProfileFragment mFavoritesFragment;
     private UserProfileFragment mAppointmentFragment;
     private UserProfileFragment mUserProfileFragment;
@@ -42,9 +45,8 @@ public class MainActivity extends AppCompatActivity implements UserProfileFragme
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
-        mNetworkController = NetworkController.getInstance(/*getSupportFragmentManager()*/this, getString(R.string.server_url));
-
-        mBrowseFragment = UserProfileFragment.newInstance(getString(R.string.bottombar_tab_browse), getString(R.string.bottombar_tab_browse));
+        mNetworkController = NetworkController.getInstance(this, getString(R.string.server_url));
+        mBrowseFragment = BrowseFragment.newInstance(1);
         mFavoritesFragment = UserProfileFragment.newInstance(getString(R.string.bottombar_tab_favorites), getString(R.string.bottombar_tab_favorites));
         mAppointmentFragment = UserProfileFragment.newInstance(getString(R.string.bottombar_tab_appointments), getString(R.string.bottombar_tab_appointments));
         mUserProfileFragment = UserProfileFragment.newInstance(getString(R.string.bottombar_tab_userprofile), getString(R.string.bottombar_tab_userprofile));
@@ -133,6 +135,10 @@ public class MainActivity extends AppCompatActivity implements UserProfileFragme
      */
     public void onUserProfileFragmentInteraction(String string) {
         updateActionbarText(string);
+    }
+
+    public void onListFragmentInteraction(DummyItem item) {
+
     }
 
     /** DownloadCallback Interface implementation START */
