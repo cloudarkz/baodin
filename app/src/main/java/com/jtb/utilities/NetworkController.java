@@ -1,13 +1,8 @@
 package com.jtb.utilities;
 
-import android.content.Context;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.os.AsyncTask;
-import android.os.Bundle;
-import android.support.annotation.Nullable;
-import android.support.v4.app.Fragment;
-import android.support.v4.app.FragmentManager;
 import android.util.Log;
 
 import org.json.JSONObject;
@@ -22,53 +17,24 @@ import java.net.URL;
 /**
  * Implementation of headless Fragment that runs an AsyncTask to fetch data from the network.
  */
-public class NetworkFragment extends Fragment {
-    public static final String TAG = "NetworkFragment";
-
-    private static final String URL_KEY = "UrlKey";
+public class NetworkController {
+    private static final String TAG = "NetworkController";
 
     private DownloadCallback mCallback;
     private DownloadTask mDownloadTask;
     private String mUrlString;
 
     /**
-     * Static initializer for NetworkFragment that sets the URL of the host it will be downloading
+     * Static initializer for NetworkController that sets the URL of the host it will be downloading
      * from.
      */
-    public static NetworkFragment getInstance(FragmentManager fragmentManager, String url) {
-        NetworkFragment networkFragment = new NetworkFragment();
-        Bundle args = new Bundle();
-        args.putString(URL_KEY, url);
-        networkFragment.setArguments(args);
-        fragmentManager.beginTransaction().add(networkFragment, TAG).commit();
-        return networkFragment;
+    public static NetworkController getInstance(DownloadCallback callback, String url) {
+        return new NetworkController(url, callback);
     }
 
-    @Override
-    public void onCreate(@Nullable Bundle savedInstanceState) {
-        super.onCreate(savedInstanceState);
-        mUrlString = getArguments().getString(URL_KEY);
-    }
-
-    @Override
-    public void onAttach(Context context) {
-        super.onAttach(context);
-        // Host Activity will handle callbacks from task.
-        mCallback = (DownloadCallback) context;
-    }
-
-    @Override
-    public void onDetach() {
-        super.onDetach();
-        // Clear reference to host Activity to avoid memory leak.
-        mCallback = null;
-    }
-
-    @Override
-    public void onDestroy() {
-        // Cancel task when Fragment is destroyed.
-        cancelDownload();
-        super.onDestroy();
+    private NetworkController(String url, DownloadCallback callback){
+        mUrlString = url;
+        mCallback = callback;
     }
 
     /**
@@ -109,13 +75,13 @@ public class NetworkFragment extends Fragment {
          * task has completed, either the result value or exception can be a non-null value.
          * This allows you to pass exceptions to the UI thread that were thrown during doInBackground().
          */
-        public class Result {
-            public String mResultValue;
-            public Exception mException;
-            public Result(String resultValue) {
+        class Result {
+            private String mResultValue;
+            private Exception mException;
+            private Result(String resultValue) {
                 mResultValue = resultValue;
             }
-            public Result(Exception exception) {
+            private Result(Exception exception) {
                 mException = exception;
             }
         }
@@ -232,7 +198,12 @@ public class NetworkFragment extends Fragment {
             } finally{
                 // Close Stream and disconnect HTTPS connection.
                 if (stream != null) {
-                    stream.close();
+                    try{
+                        stream.close();
+                    }
+                    catch(IOException e){
+                        e.printStackTrace();
+                    }
                 }
                 if (connection != null) {
                     connection.disconnect();

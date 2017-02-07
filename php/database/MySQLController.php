@@ -34,18 +34,47 @@ class MySQLController {
         $stmt->bind_result($accountID);
         $stmt->fetch();
 
-        if (!empty($accountID)) {
+        if($stmt->errno != 0){
+            $error = $stmt->error;
             $stmt->close();
+
+            return array(1, "Database error: ".$error);
+        }
+
+        $stmt->close();
+
+        if (!empty($accountID)) {
             return array(0, $accountID);
         }
         else{
-            $error = "";
+            return array(1, "Username and/or password is invalid.");
+        }
+    }
 
-            if($stmt->errno != 0)
-                $error = $stmt->error;
+    function getAccountDetails( $accountID ){
+        $stmt = $this->mysqli->prepare("SELECT name, email, contactNumber FROM LoginAccounts WHERE accountID = ?");
+        $stmt->bind_param('s', $accountID);
+        $stmt->execute();
+        $stmt->bind_result($name, $email, $contactNumber);
+        $stmt->fetch();
+
+        if($stmt->errno != 0){
+            $error = $stmt->error;
             $stmt->close();
 
-            return array(1, "Username and/or password is invalid.".$error);
+            return array(1, "Database error: ".$error);
+        }
+
+        $stmt->close();
+
+        if (!empty($name)) {
+            return array(0, array(  "accountID" => $accountID,
+                                    "name" => $name,
+                                    "email" => $email,
+                                    "contactNumber" => $contactNumber ));
+        }
+        else{
+            return array(1, "Account ID is invalid.");
         }
     }
 }

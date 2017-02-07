@@ -33,16 +33,37 @@ switch($req['cmd']){
      */
 
     case 'authenticate':
-        /** This request will run the first time a client runs the app to request client ID, other items TBD
+        /** This request authenticate login details with server database
          * @params
          *  email - VARCHAR(50)
          * @params
          *  password - VARCHAR(50)
          * @echo:data
-         *  accountID - String, Auto generated 20 digit
+         *  accountID - String, Auto generated 20 characters
+         *  name - String
+         *  email - String
+         *  contactNumber - String
          */
 
         $result = $mysqli->authenticateLogin($req["email"], $req["password"]);
+
+        echo json_encode(array(
+            'response' => $result[0],
+            'data' => $result[1]
+        ));
+        break;
+
+    case 'get-account-details':
+        /** This request will test run getting account details
+         * @params
+         *  accountID - VARCHAR(20)
+         * @echo:data
+         *  name - String
+         *  email - String
+         *  contactNumber - String
+         */
+
+        $result = $mysqli->getAccountDetails($req["accountID"]);
 
         echo json_encode(array(
             'response' => $result[0],

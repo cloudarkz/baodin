@@ -3,6 +3,7 @@ package com.jtb.baodin;
 import android.app.ProgressDialog;
 import android.content.Context;
 import android.content.Intent;
+import android.content.SharedPreferences;
 import android.net.ConnectivityManager;
 import android.net.NetworkInfo;
 import android.support.v7.app.AppCompatActivity;
@@ -13,7 +14,6 @@ import android.widget.EditText;
 import android.widget.TextView;
 
 import com.google.android.gms.auth.api.Auth;
-import com.google.android.gms.auth.api.signin.GoogleSignInAccount;
 import com.google.android.gms.auth.api.signin.GoogleSignInOptions;
 import com.google.android.gms.auth.api.signin.GoogleSignInResult;
 import com.google.android.gms.common.ConnectionResult;
@@ -22,7 +22,7 @@ import com.google.android.gms.common.api.OptionalPendingResult;
 import com.google.android.gms.common.api.ResultCallback;
 import com.google.android.gms.common.api.Status;
 import com.jtb.utilities.DownloadCallback;
-import com.jtb.utilities.NetworkFragment;
+import com.jtb.utilities.NetworkController;
 
 import org.json.JSONObject;
 
@@ -32,16 +32,16 @@ import org.json.JSONObject;
 
 public class LoginActivity extends AppCompatActivity implements GoogleApiClient.OnConnectionFailedListener, View.OnClickListener, DownloadCallback<String> {
     private static final String TAG = "LoginActivity";
-    public final static String LOGIN_SUCCESS = "com.jtb.baodin.LOGIN_SUCCESS";
+    public static final String LOGIN_SUCCESS = "com.jtb.baodin.LOGIN_SUCCESS";
     private static final int RC_SIGN_IN = 9001;
 
     private GoogleApiClient mGoogleApiClient;
     private TextView mStatusTextView;
     private ProgressDialog mProgressDialog;
 
-    // Keep a reference to the NetworkFragment, which owns the AsyncTask object
+    // Keep a reference to the NetworkController, which owns the AsyncTask object
     // that is used to execute network ops.
-    private NetworkFragment mNetworkFragment;
+    private NetworkController mNetworkController;
 
     // Boolean telling us whether a download is in progress, so we don't trigger overlapping
     // downloads with consecutive button clicks.
@@ -52,7 +52,7 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_login);
 
-        mNetworkFragment = NetworkFragment.getInstance(getSupportFragmentManager(), getString(R.string.server_url));
+        mNetworkController = NetworkController.getInstance(/*getSupportFragmentManager()*/this, getString(R.string.server_url));
 
         // Views
         mStatusTextView = (TextView) findViewById(R.id.status);
@@ -240,24 +240,29 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
         startActivity(intent);
     }
 
+    /** DownloadCallback Interface implementation START */
     private void startDownload(JSONObject req) {
-        if (!mDownloading && mNetworkFragment != null) {
+        if (!mDownloading && mNetworkController != null) {
             // Execute the async download.
-            mNetworkFragment.startDownload(req);
+            mNetworkController.startDownload(req);
             mDownloading = true;
         }
     }
 
-    /** DownloadCallback Interface implementation START */
     @Override
     public void updateFromDownload(String result) {
         // Update your UI here based on result of download.
 
         try{
+            Log.d(TAG, "Database Result: " + result);
             JSONObject jObject = new JSONObject(result);
 
             if(jObject.getInt("response") == 0){
                 Log.d(TAG, "Login Successful for accountID: " + jObject.getString("data"));
+                SharedPreferences settings = getSharedPreferences(MainActivity.ACCOUNTS_DETAILS, 0);
+                SharedPreferences.Editor editor = settings.edit();
+                editor.putString("accountID", jObject.getString("data"));
+                editor.commit();
                 loginSuccess();
             }
             else{
@@ -305,8 +310,8 @@ public class LoginActivity extends AppCompatActivity implements GoogleApiClient.
     @Override
     public void finishDownloading() {
         mDownloading = false;
-        if (mNetworkFragment != null) {
-            mNetworkFragment.cancelDownload();
+        if (mNetworkController != null) {
+            mNetworkController.cancelDownload();
         }
     }
     /** DownloadCallback Interface implementation END */

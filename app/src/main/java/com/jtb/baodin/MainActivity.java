@@ -13,7 +13,7 @@ import android.os.Bundle;
 import android.util.Log;
 
 import com.jtb.utilities.DownloadCallback;
-import com.jtb.utilities.NetworkFragment;
+import com.jtb.utilities.NetworkController;
 import com.roughike.bottombar.BottomBar;
 import com.roughike.bottombar.OnTabReselectListener;
 import com.roughike.bottombar.OnTabSelectListener;
@@ -22,33 +22,34 @@ import org.json.JSONObject;
 
 public class MainActivity extends AppCompatActivity implements UserProfileFragment.OnUserProfileFragmentInteraction, DownloadCallback<String> {
     public static final String TAG = "MainActivity";
+    public static final String ACCOUNTS_DETAILS = "AccountsDetails";
 
     private UserProfileFragment mBrowseFragment;
     private UserProfileFragment mFavoritesFragment;
     private UserProfileFragment mAppointmentFragment;
     private UserProfileFragment mUserProfileFragment;
 
-    // Keep a reference to the NetworkFragment, which owns the AsyncTask object
+    // Keep a reference to the NetworkController, which owns the AsyncTask object
     // that is used to execute network ops.
-    private NetworkFragment mNetworkFragment;
+    private NetworkController mNetworkController;
 
     // Boolean telling us whether a download is in progress, so we don't trigger overlapping
     // downloads with consecutive button clicks.
     private boolean mDownloading = false;
-
-    private boolean isLogin = false;
 
     @Override
     protected void onCreate(Bundle savedInstanceState) {
         super.onCreate(savedInstanceState);
         setContentView(R.layout.activity_main);
 
+        mNetworkController = NetworkController.getInstance(/*getSupportFragmentManager()*/this, getString(R.string.server_url));
+
         mBrowseFragment = UserProfileFragment.newInstance(getString(R.string.bottombar_tab_browse), getString(R.string.bottombar_tab_browse));
         mFavoritesFragment = UserProfileFragment.newInstance(getString(R.string.bottombar_tab_favorites), getString(R.string.bottombar_tab_favorites));
         mAppointmentFragment = UserProfileFragment.newInstance(getString(R.string.bottombar_tab_appointments), getString(R.string.bottombar_tab_appointments));
         mUserProfileFragment = UserProfileFragment.newInstance(getString(R.string.bottombar_tab_userprofile), getString(R.string.bottombar_tab_userprofile));
 
-        mNetworkFragment = NetworkFragment.getInstance(getSupportFragmentManager(), getString(R.string.server_url));
+        boolean isLogin;
 
         Intent mainIntent = getIntent();
         isLogin = mainIntent.getBooleanExtra(LoginActivity.LOGIN_SUCCESS, false);
@@ -134,20 +135,21 @@ public class MainActivity extends AppCompatActivity implements UserProfileFragme
         updateActionbarText(string);
     }
 
+    /** DownloadCallback Interface implementation START */
     private void startDownload(JSONObject req) {
-        if (!mDownloading && mNetworkFragment != null) {
+        if (!mDownloading && mNetworkController != null) {
             // Execute the async download.
-            mNetworkFragment.startDownload(req);
+            mNetworkController.startDownload(req);
             mDownloading = true;
         }
     }
 
-    /** DownloadCallback Interface implementation START */
     @Override
     public void updateFromDownload(String result) {
         // Update your UI here based on result of download.
 
         try{
+            Log.d(TAG, "DATABASE RESULT: " + result);
             JSONObject jObject = new JSONObject(result);
 
             if(jObject.getInt("response") == 0)
@@ -193,8 +195,8 @@ public class MainActivity extends AppCompatActivity implements UserProfileFragme
     @Override
     public void finishDownloading() {
         mDownloading = false;
-        if (mNetworkFragment != null) {
-            mNetworkFragment.cancelDownload();
+        if (mNetworkController != null) {
+            mNetworkController.cancelDownload();
         }
     }
     /** DownloadCallback Interface implementation END */
