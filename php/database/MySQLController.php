@@ -77,4 +77,28 @@ class MySQLController {
             return array(1, "Account ID is invalid.");
         }
     }
+
+    function searchAccount( $searchParam ){
+            $stmt = $this->mysqli->prepare("SELECT accountID FROM LoginAccounts WHERE CONCAT_WS(',', name, email, contactNumber) LIKE ?");
+            $stmt->bind_param('s', '%'.$searchParam.'%');
+            $stmt->execute();
+            $stmt->bind_result($accountID);
+            $stmt->fetch();
+
+            if($stmt->errno != 0){
+                $error = $stmt->error;
+                $stmt->close();
+
+                return array(1, "Database error: ".$error);
+            }
+
+            $stmt->close();
+
+            if (!empty($name)) {
+                return array(0, $accountID);
+            }
+            else{
+                return array(1, "No result found.");
+            }
+        }
 }

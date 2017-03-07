@@ -70,4 +70,20 @@ switch($req['cmd']){
             'data' => $result[1]
         ));
         break;
+
+    case 'search-accounts':
+            /** This request will test run searching for accounts
+             * @params
+             *  searchParam - String
+             * @echo:data
+             *  accountID - String
+             */
+
+            $result = $mysqli->searchAccount($req["searchParam"]);
+
+            echo json_encode(array(
+                'response' => $result[0],
+                'data' => $result[1]
+            ));
+            break;
 }
